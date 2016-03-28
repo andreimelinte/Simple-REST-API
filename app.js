@@ -127,7 +127,7 @@ router.post('/movies/', function (req, res, next) {
     movies[movieId].id = movieId;
 
     res.setHeader('Content-Type', 'application/json');
-    fs.writeFile('data/movies.json', JSON.stringify(movies), function (err) {
+    fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
         if (err) {
             res.end(JSON.stringify({ status: 'error' }));
         }
@@ -140,13 +140,13 @@ router.post('/movies/', function (req, res, next) {
 });
 
 router.put('/movies/', function (req, res, next) {
-	var movies = readMovies(),
+    var movies = readMovies(),
         movieId = req.body.id;
 
     res.setHeader('Content-Type', 'application/json');
     movies[movieId] = req.body;
 
-    fs.writeFile('data/movies.json', JSON.stringify(movies), function (err) {
+    fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
         if (err) {
             res.end(JSON.stringify({ status: 'error' }));
         }
@@ -158,14 +158,38 @@ router.put('/movies/', function (req, res, next) {
     });
 });
 
+router.patch('/movies/', function (req, res, next) {
+	var movies = readMovies(),
+        movieId = req.body.movieId;
+
+    res.setHeader('Content-Type', 'application/json');
+
+    _.forEach(req.body, function (value, key) {
+        if (key !== 'movieId') {
+            movies[movieId][key] = value;
+        }
+    });
+
+    fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
+        if (err) {
+            res.end(JSON.stringify({ status: 'error' }));
+        }
+
+        res.end(JSON.stringify({
+            status: 'success',
+            data: movies[movieId]
+        }));
+    });
+});
+
 router.delete('/movies/', function (req, res, next) {
 	var movies = readMovies(),
-        movieId = req.body.id;
+        movieId = req.body.movieId;
 
     delete movies[movieId];
 
     res.setHeader('Content-Type', 'application/json');
-    fs.writeFile('data/movies.json', JSON.stringify(movies), function (err) {
+    fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
         if (err) {
             res.end(JSON.stringify({ status: 'error' }));
         }
@@ -340,33 +364,33 @@ router.all('/logout', function (req, res, next) {
 router.get('/votes/:movieId', function (req, res) {
     var votes = readVotes();
     var votesList = [];
-   
+
 	res.setHeader('Content-Type', 'application/json');
 
-	if (req.params.movieId) { 
+	if (req.params.movieId) {
         votesList = _.filter(votes, function (vote) {
            return vote.movieId == req.params.movieId;
         });
     }
-    
+
      res.end(JSON.stringify(votesList));
 });
 
 router.post('/votes', function (req, res) {
     var votes = readVotes();
     var computedVote = {};
-   
+
     computedVote = {
         movieId: req.body.movieId,
         vote: req.body.vote,
         id: uuid()
     };
-    
+
 	res.setHeader('Content-Type', 'application/json');
-    
+
     if (computedVote.movieId !== undefined && computedVote.vote !== undefined) {
         votes.push(computedVote);
-        
+
         fs.writeFile('data/votes.js', JSON.stringify(votes), function (err) {
             if (err) {
                 res.end(JSON.stringify({
@@ -380,7 +404,7 @@ router.post('/votes', function (req, res) {
                 res.end(JSON.stringify(computedVote));
             }
         });
-        
+
     } else {
         res.end(JSON.stringify({
             status: 'error',
