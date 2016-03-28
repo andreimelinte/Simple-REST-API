@@ -1,0 +1,1 @@
+{"1":{"name":"Administrator","username":"admin","password":"admin","id":"1","token":"","role":"admin"},"2":{"name":"John Doe","username":"manager","password":"manager","id":"2","token":"","role":"manager"},"3":{"name":"John Poe","username":"editor","password":"editor","id":"3","token":"","role":"editor"}}
