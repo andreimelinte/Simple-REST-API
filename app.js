@@ -51,6 +51,18 @@ function readUsers () {
     return users;
 }
 
+function readVotes () {
+    var users;
+
+    try {
+        users = JSON.parse(fs.readFileSync('data/votes.js', { encoding: 'utf8' }));
+    } catch(err) {
+        users = {};
+    }
+
+    return users;
+}
+
 function getLoggedInUserId(res) {
     var users = readUsers();
     var loggedInUser = _.find(users, function(user) {
@@ -186,7 +198,7 @@ router.get('/actors/:id', function (req, res, next) {
 
 	if (req.params.id) {
 		actor = _.find(actors, function (_actor) {
-			return _actor.id === req.params.id;
+			return _actor.actorId === req.params.id;
 		}) || {};
 		res.end(JSON.stringify(actor));
 	} else {
@@ -321,5 +333,61 @@ router.all('/logout', function (req, res, next) {
             message: 'Incorrect token',
             id: 'ER3'
         }}));
+    }
+});
+
+// votes
+router.get('/votes/:movieId', function (req, res) {
+    var votes = readVotes();
+    var votesList = [];
+   
+	res.setHeader('Content-Type', 'application/json');
+
+	if (req.params.movieId) { 
+        votesList = _.filter(votes, function (vote) {
+           return vote.movieId == req.params.movieId;
+        });
+    }
+    
+     res.end(JSON.stringify(votesList));
+});
+
+router.post('/votes', function (req, res) {
+    var votes = readVotes();
+    var computedVote = {};
+   
+    computedVote = {
+        movieId: req.body.movieId,
+        vote: req.body.vote,
+        id: uuid()
+    };
+    
+	res.setHeader('Content-Type', 'application/json');
+    
+    if (computedVote.movieId !== undefined && computedVote.vote !== undefined) {
+        votes.push(computedVote);
+        
+        fs.writeFile('data/votes.js', JSON.stringify(votes), function (err) {
+            if (err) {
+                res.end(JSON.stringify({
+                    status: 'error',
+                    error: {
+                        message: 'server error',
+                        id: 'ER3'
+                    }
+                }));
+            } else {
+                res.end(JSON.stringify(computedVote));
+            }
+        });
+        
+    } else {
+        res.end(JSON.stringify({
+            status: 'error',
+            error: {
+                message: 'invalid vote data',
+                id: 'ER4'
+            }
+        }));
     }
 });
