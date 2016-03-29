@@ -121,10 +121,11 @@ router.get('/movies/', function (req, res, next) {
 
 router.post('/movies/', function (req, res, next) {
 	var movies = readMovies(),
-        movieId = uuid();
+        movieId = uuid(),
+        movieToAdd = req.body;
 
-    movies[movieId] = req.body;
-    movies[movieId].id = movieId;
+    movieToAdd.id = movieId;
+    movies.push(movieToAdd);
 
     res.setHeader('Content-Type', 'application/json');
     fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
@@ -143,8 +144,12 @@ router.put('/movies/', function (req, res, next) {
     var movies = readMovies(),
         movieId = req.body.id;
 
+    var movieIndex = _.findIndex(movies, function (movie) {
+        return movie.id = movieId;
+    });
+
     res.setHeader('Content-Type', 'application/json');
-    movies[movieId] = req.body;
+    movies[movieIndex] = req.body;
 
     fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
         if (err) {
@@ -160,13 +165,17 @@ router.put('/movies/', function (req, res, next) {
 
 router.patch('/movies/', function (req, res, next) {
 	var movies = readMovies(),
-        movieId = req.body.movieId;
+        movieId = req.body.id;
 
     res.setHeader('Content-Type', 'application/json');
 
+    var movieIndex = _.findIndex(movies, function (movie) {
+        return movie.id = movieId;
+    });
+
     _.forEach(req.body, function (value, key) {
-        if (key !== 'movieId') {
-            movies[movieId][key] = value;
+        if (key !== 'id') {
+            movies[movieIndex][key] = value;
         }
     });
 
@@ -177,16 +186,20 @@ router.patch('/movies/', function (req, res, next) {
 
         res.end(JSON.stringify({
             status: 'success',
-            data: movies[movieId]
+            data: movies[movieIndex]
         }));
     });
 });
 
 router.delete('/movies/', function (req, res, next) {
 	var movies = readMovies(),
-        movieId = req.body.movieId;
+        movieId = req.body.id;
 
-    delete movies[movieId];
+    var movieIndex = _.findIndex(movies, function (movie, index) {
+        return movie.id === movieId;
+    });
+
+    movies.splice(movieIndex, 1);
 
     res.setHeader('Content-Type', 'application/json');
     fs.writeFile('data/movies.js', JSON.stringify(movies), function (err) {
