@@ -157,7 +157,7 @@ router.put('/movies/', function (req, res, next) {
         movieId = req.body.id;
 
     var movieIndex = _.findIndex(movies, function (movie) {
-        return movie.id = movieId;
+        return movie.id === movieId;
     });
 
     res.setHeader('Content-Type', 'application/json');
@@ -182,7 +182,7 @@ router.patch('/movies/', function (req, res, next) {
     res.setHeader('Content-Type', 'application/json');
 
     var movieIndex = _.findIndex(movies, function (movie) {
-        return movie.id = movieId;
+        return movie.id === movieId;
     });
 
     _.forEach(req.body, function (value, key) {

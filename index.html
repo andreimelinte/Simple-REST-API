@@ -14,7 +14,8 @@
 
         <script type="text/javascript">
 
-        superagent.get('//localhost:3000/movies')
+        superagent.del('//localhost:3000/movies')
+        .send({ id: '6bb3dc71-fde5-4ae1-bfad-96a2794acf13' })
         .end(function (err, res) {
             console.log(err, res);
         });
