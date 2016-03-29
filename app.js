@@ -21,10 +21,22 @@ function readMovies () {
     try {
         movies = JSON.parse(fs.readFileSync('data/movies.js', { encoding: 'utf8' }));
     } catch(err) {
-        movies = {};
+        movies = [];
     }
 
     return movies;
+}
+
+function readContact () {
+    var contact;
+
+    try {
+        contact = JSON.parse(fs.readFileSync('data/contact.js', { encoding: 'utf8' }));
+    } catch(err) {
+        contact = [];
+    }
+
+    return contact;
 }
 
 function readActors () {
@@ -427,4 +439,35 @@ router.post('/votes', function (req, res) {
             }
         }));
     }
+});
+
+// contact
+router.get('/contact/', function (req, res) {
+    var contactData = readContact();
+
+    res.setHeader('Content-Type', 'application/json');
+
+    res.end(JSON.stringify(contactData));
+});
+
+router.post('/contact/', function (req, res, next) {
+    var contactData = readContact(),
+        contactId = uuid();
+
+    var contactToAdd = req.body;
+
+    contactToAdd.id = contactId;
+    contactData.push(contactToAdd);
+
+    res.setHeader('Content-Type', 'application/json');
+    fs.writeFile('data/contact.js', JSON.stringify(contactData), function (err) {
+        if (err) {
+            res.end(JSON.stringify({ status: 'error' }));
+        }
+
+        res.end(JSON.stringify({
+            status: 'success',
+            data: contactToAdd
+        }));
+    });
 });

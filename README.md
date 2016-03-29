@@ -65,3 +65,20 @@ N/A
 #### Deleting a vote
 N/A
 
+
+
+### Contact
+**endpoint: `/contact`**
+
+#### Getting all contact messages
+Call a *GET* method on the `/contact` endpoint
+
+#### Adding a contact message
+Call a *POST* method on the `/contact` endpoint sending the form values as data
+
+#### Updating a vote
+N/A
+
+#### Deleting a vote
+N/A
+
