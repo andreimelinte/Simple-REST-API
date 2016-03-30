@@ -115,7 +115,7 @@ router.get('/movies/:id', function (req, res, next) {
 
 	if (req.params.id) {
 		movie = _.find(movies, function (_movie) {
-			return _movie.id === req.params.id;
+			return _movie.id == req.params.id;
 		}) || {};
 		res.end(JSON.stringify(movie));
 	} else {
@@ -157,7 +157,7 @@ router.put('/movies/', function (req, res, next) {
         movieId = req.body.id;
 
     var movieIndex = _.findIndex(movies, function (movie) {
-        return movie.id === movieId;
+        return movie.id == movieId;
     });
 
     res.setHeader('Content-Type', 'application/json');
@@ -182,7 +182,7 @@ router.patch('/movies/', function (req, res, next) {
     res.setHeader('Content-Type', 'application/json');
 
     var movieIndex = _.findIndex(movies, function (movie) {
-        return movie.id === movieId;
+        return movie.id == movieId;
     });
 
     _.forEach(req.body, function (value, key) {
@@ -247,7 +247,7 @@ router.get('/actors/:id', function (req, res, next) {
 
 	if (req.params.id) {
 		actor = _.find(actors, function (_actor) {
-			return _actor.actorId === req.params.id;
+			return _actor.actorId == req.params.id;
 		}) || {};
 		res.end(JSON.stringify(actor));
 	} else {
